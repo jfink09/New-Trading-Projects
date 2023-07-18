@@ -1,0 +1,11 @@
+//@version=5
+indicator("Matryoshka", overlay=true)
+
+Intradaylow = low
+Intradayhigh = high
+
+matrix = (high[2] >= high[1] and low[2] <= low[1]) and (high[1] >= high[0] and low[1] <= low[0]) ? 1 : 0
+
+signal = matrix == 1 ? true : false
+
+plotarrow(signal ? 1 : na)
