@@ -1,0 +1,135 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <title>Equity Curve Viewer</title>
+    <!-- Include Chart.js library -->
+    <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+    <!-- Include SheetJS library -->
+    <script src="https://cdn.jsdelivr.net/npm/xlsx/dist/xlsx.full.min.js"></script>
+    <style>
+        * {
+            background-color: #e0e0e0;
+        }
+        body {
+            display: flex;
+            justify-content: center;
+            align-items: center;
+        }
+        #chartContainer {
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+        }
+                /* Add spacing between the input and the canvas */
+                #fileInput {
+            margin-top: 20px;
+        }
+        canvas {
+            max-width: 100% !important;
+            max-height: 100% !important;
+            height: 400px; /* Set the fixed height for the canvas */
+            background-color: #e0e0e0;
+            box-shadow: 15px 15px 20px #929292, -15px -15px 20px #ffffff;
+            border-radius: 15px;
+            margin-bottom: 20px; /* Add spacing between the canvas and the input */
+            margin-top: 80px;
+        }
+    </style>
+</head>
+<body>
+ 
+    <div id="chartContainer">
+        <!-- Canvas to draw the line plot -->
+        <canvas id="lineChart" width="1000" height="400"></canvas>
+
+        <!-- Input element for file upload -->
+        <input type="file" id="fileInput">
+    </div>
+
+    <script>
+        let chart = null; // Reference to the Chart.js instance
+
+        // Event listener for file input
+        document.getElementById('fileInput').addEventListener('change', handleFileSelect, false);
+
+        function handleFileSelect(event) {
+            const file = event.target.files[0];
+            const reader = new FileReader();
+
+            reader.onload = function (e) {
+                const data = new Uint8Array(e.target.result);
+                const workbook = XLSX.read(data, { type: 'array' });
+
+                // Assuming the data is in the first sheet (sheet 0)
+                const firstSheetName = workbook.SheetNames[0];
+                const worksheet = workbook.Sheets[firstSheetName];
+
+                // Convert the worksheet data to JSON format
+                const jsonData = XLSX.utils.sheet_to_json(worksheet, { header: 1, raw: false });
+
+                // Find the last row that contains a valid date in Column A
+                let lastRowIndex = jsonData.length - 1;
+                for (let i = jsonData.length - 1; i >= 0; i--) {
+                    const cellValue = jsonData[i][0];
+                    if (!isNaN(Date.parse(cellValue))) {
+                        lastRowIndex = i;
+                        break;
+                    }
+                }
+
+                // Process the jsonData up to the last valid date row
+                const labels = jsonData.slice(1, lastRowIndex + 1).map(row => row[0]); // Assuming the date values are in Column A (index 0)
+                const accountValues = jsonData.slice(1, lastRowIndex + 1).map(row => parseFloat(row[1])); // Assuming the account values are in Column B (index 1)
+
+                // Destroy the previous chart instance, if any
+                if (chart) {
+                    chart.destroy();
+                }
+
+                // Create the Chart.js line plot
+                const ctx = document.getElementById('lineChart').getContext('2d');
+                chart = new Chart(ctx, {
+                    type: 'line',
+                    data: {
+                        labels: labels,
+                        datasets: [{
+                            label: 'Equity Curve',
+                            data: accountValues,
+                            borderColor: 'blue',
+                            backgroundColor: 'lightblue',
+                            fill: true,
+                            pointRadius: 0, // Hide the data points
+                            pointHitRadius: 5
+                        }]
+                    },
+                    options: {
+                        responsive: true,
+                        maintainAspectRatio: false,
+                        scales: {
+                            xAxes: [{
+                                type: 'time', // Set X-axis type to 'time'
+                                time: {
+                                    unit: 'day' // Adjust time unit as needed
+                                },
+                                scaleLabel: {
+                                    display: true,
+                                    labelString: 'Date'
+                                }
+                            }],
+                            yAxes: [{
+                                display: true,
+                                scaleLabel: {
+                                    display: true,
+                                    labelString: 'Account Value'
+                                }
+                            }]
+                        }
+                    }
+                });
+            };
+
+            reader.readAsArrayBuffer(file);
+        }
+    </script>
+</body>
+</html>
