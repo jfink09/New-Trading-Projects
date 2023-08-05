@@ -1,0 +1,755 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Equity Curve Calculator</title>
+    <!-- Include Chart.js library -->
+    <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+    <!-- Include SheetJS library -->
+    <script src="https://cdn.jsdelivr.net/npm/xlsx/dist/xlsx.full.min.js"></script>
+    <style>
+        @import url("https://fonts.googleapis.com/css2?family=Poppins:wght@200;300;400;500;600&display=swap");
+        @import url("https://cdnjs.cloudflare.com/ajax/libs/font-awesome/5.11.2/css/all.min.css");
+        * {
+            background-color:#1c1c25;
+        }
+        body {
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            color:rgb(255,255,255);
+            overflow: hidden; /* Disable scrolling for the whole page */
+        }
+        #chartContainer {
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+        }
+                /* Add spacing between the input and the canvas */
+                #fileInput {
+            margin-top: 20px;
+        }
+        canvas {
+            max-height: 400px; /* Set the fixed height for the canvas */
+            /*box-shadow: 15px 15px 20px #929292, -15px -15px 20px #ffffff;*/
+            border-radius: 15px;
+            margin-bottom: 20px; /* Add spacing between the canvas and the input */
+            margin-top: 40px;
+            background: rgba( 0, 0, 0, 0.15 );
+box-shadow: 0 8px 16px 0 rgba(36, 37, 57, 0.37); /*was 0 8px 32px 0*/
+backdrop-filter: blur( 10px );
+-webkit-backdrop-filter: blur( 10px );
+border-radius: 10px;
+border: 1px solid rgba( 255, 255, 255, 0.18 );
+        }
+/*
+        .bckgd-globe1,
+    .bckgd-globe2 {
+      position: absolute;
+      background-image: linear-gradient(rgb(0, 127, 185), rgb(140, 103, 209));
+      border-radius: 500px;
+    }
+    .bckgd-globe1 {
+        top: 20%;
+        left: 20%;
+        width: 200px;
+      height: 200px;
+        animation:moveblue 30s ease-in-out infinite;
+  -moz-animation:moveblue 30s ease-in-out infinite;
+  -webkit-animation:moveblue 30s ease-in-out infinite;
+    }
+    .bckgd-globe2 {
+      bottom: 20%;
+      right: 10%;
+      width: 150px;
+      height: 150px;
+      background-image: linear-gradient(rgb(221, 0, 85), magenta);
+      animation:movepink 30s ease-in-out infinite;
+        -moz-animation:movepink 30s ease-in-out infinite;
+        -webkit-animation:movepink 30s ease-in-out infinite;
+    }
+
+    .bckgd-globe3 {
+      bottom: 30%;
+      right: 20%;
+      height: 100px;
+      width: 100px;
+      border-radius: 500px;
+      position: absolute;
+      background: #DCE35B;  /* fallback for old browsers */
+/*background: -webkit-linear-gradient(to right, #45B649, #DCE35B);  /* Chrome 10-25, Safari 5.1-6 */
+/*background: linear-gradient(to right, #45B649, #DCE35B); /* W3C, IE 10+/ Edge, Firefox 16+, Chrome 26+, Opera 12+, Safari 7+ */
+  /*    animation:move3 20s ease-in-out infinite;
+        -moz-animation:move3 20s ease-in-out infinite;
+        -webkit-animation:move3 20s ease-in-out infinite;
+    }
+
+    .bckgd-globe4 {
+      bottom: 20%;
+      right: 10%;
+      height: 50px;
+      width: 50px;
+      position: absolute;
+      border-radius: 500px;
+      background-color: #00DBDE;
+background-image: linear-gradient(90deg, #00DBDE 0%, #FC00FF 100%);
+      animation:move4 40s ease-in-out infinite;
+        -moz-animation:move4 40s ease-in-out infinite;
+        -webkit-animation:move4 40s ease-in-out infinite;
+    }
+
+    .bckgd-globe5 {
+      bottom: 45%;
+      right: 35%;
+      height: 150px;
+      width: 150px;
+      border-radius: 500px;
+      position: absolute;
+      background-color: #FFE53B;
+      background-image: linear-gradient(147deg, #FFE53B 0%, #FF2525 74%);
+      animation:move5 12s ease-in-out infinite;
+        -moz-animation:move5 12s ease-in-out infinite;
+        -webkit-animation:move5 12s ease-in-out infinite;
+    }
+
+    .bckgd-globe6 {
+      bottom: 45%;
+      right: 35%;
+      height: 80px;
+      width:80px;
+      border-radius: 500px;
+      position: absolute;
+      background-color: #FF9A8B;
+background-image: linear-gradient(90deg, #FF9A8B 0%, #FF6A88 55%, #FF99AC 100%);
+      animation:move6 20s ease-in-out infinite;
+        -moz-animation:move6 20s ease-in-out infinite;
+        -webkit-animation:move6 20s ease-in-out infinite;
+    }
+    .bckgd-globe7 {
+      bottom: 45%;
+      right: 35%;
+      height: 100px;
+      width:100px;
+      border-radius: 500px;
+      position: absolute;
+      background: #200122; /* fallback for old browsers */
+ /* background: -webkit-linear-gradient(to right, #200122, #6f0000); /* Chrome 10-25, Safari 5.1-6 */
+ /* background: linear-gradient(to right, #200122, #6f0000); /* W3C, IE 10+/ Edge, Firefox 16+, Chrome 26+, Opera 12+, Safari 7+ */
+  /*    animation:move7 25s ease-in-out infinite;
+        -moz-animation:move7 25s ease-in-out infinite;
+        -webkit-animation:move7 25s ease-in-out infinite;
+    }
+    .bckgd-globe8 {
+      bottom: 45%;
+      right: 35%;
+      height: 75px;
+      width:75px;
+      border-radius: 500px;
+      position: absolute;
+     /* background: #ee0979;  /* fallback for old browsers */
+/*background: -webkit-linear-gradient(to right, #ff6a00, #ee0979);  /* Chrome 10-25, Safari 5.1-6 */
+/*background: linear-gradient(to right, #ff6a00, #ee0979); /* W3C, IE 10+/ Edge, Firefox 16+, Chrome 26+, Opera 12+, Safari 7+ */
+/*background: #ff00cc;  /* fallback for old browsers */
+/*background: -webkit-linear-gradient(to right, #333399, #ff00cc);  /* Chrome 10-25, Safari 5.1-6 */
+/*background: linear-gradient(to right, #333399, #ff00cc); /* W3C, IE 10+/ Edge, Firefox 16+, Chrome 26+, Opera 12+, Safari 7+ */
+
+/*
+      animation:move8 18s ease-in-out infinite;
+        -moz-animation:move8 18s ease-in-out infinite;
+        -webkit-animation:move8 18s ease-in-out infinite;
+    }
+
+*/
+
+/* Common styles for all globes */
+.bckgd-globe1,
+.bckgd-globe2,
+.bckgd-globe3,
+.bckgd-globe4,
+.bckgd-globe5,
+.bckgd-globe6,
+.bckgd-globe7,
+.bckgd-globe8 {
+  position: absolute;
+  border-radius: 500px;
+}
+
+/* Globe 1 */
+.bckgd-globe1 {
+  top: 20%;
+  left: 20%;
+  width: 8vw; /* Use vw unit to make it responsive */
+  height: 8vw;
+  background-image: linear-gradient(rgb(0, 127, 185), rgb(140, 103, 209));
+  animation: moveblue 30s ease-in-out infinite;
+}
+
+/* Globe 2 */
+.bckgd-globe2 {
+  bottom: 20%;
+  right: 10%;
+  width: 6vw; /* Use vw unit to make it responsive */
+  height: 6vw;
+  background-image: linear-gradient(rgb(221, 0, 85), magenta);
+  animation: movepink 30s ease-in-out infinite;
+}
+
+/* Common styles for all globes */
+.bckgd-globe3,
+.bckgd-globe4,
+.bckgd-globe5,
+.bckgd-globe6,
+.bckgd-globe7,
+.bckgd-globe8 {
+  position: absolute;
+  border-radius: 500px;
+}
+
+/* Globe 3 */
+.bckgd-globe3 {
+  bottom: 30%;
+  right: 20%;
+  width: 4vw; /* Use vw unit to make it responsive */
+  height: 4vw;
+  background: #DCE35B;
+  background: -webkit-linear-gradient(to right, #45B649, #DCE35B);
+  background: linear-gradient(to right, #45B649, #DCE35B);
+  animation: move3 20s ease-in-out infinite;
+}
+
+/* Globe 4 */
+.bckgd-globe4 {
+  bottom: 20%;
+  right: 10%;
+  width: 2vw; /* Use vw unit to make it responsive */
+  height: 2vw;
+  background: #ff00cc;
+  background: -webkit-linear-gradient(to right, #333399, #ff00cc);
+  background: linear-gradient(to right, #333399, #ff00cc);
+  animation: move4 40s ease-in-out infinite;
+}
+
+/* Globe 5 */
+.bckgd-globe5 {
+  bottom: 45%;
+  right: 35%;
+  width: 6vw; /* Use vw unit to make it responsive */
+  height: 6vw;
+  background-color: #FFE53B;
+  background-image: linear-gradient(147deg, #FFE53B 0%, #FF2525 74%);
+  animation: move5 12s ease-in-out infinite;
+}
+
+/* Globe 6 */
+.bckgd-globe6 {
+  bottom: 45%;
+  right: 35%;
+  width: 3.2vw; /* Use vw unit to make it responsive */
+  height: 3.2vw;
+  background-color: #FF9A8B;
+  background-image: linear-gradient(90deg, #FF9A8B 0%, #FF6A88 55%, #FF99AC 100%);
+  animation: move6 20s ease-in-out infinite;
+}
+
+/* Globe 7 */
+.bckgd-globe7 {
+  bottom: 45%;
+  right: 35%;
+  width: 4vw; /* Use vw unit to make it responsive */
+  height: 4vw;
+  background: #200122;
+  background: -webkit-linear-gradient(to right, #200122, #6f0000);
+  background: linear-gradient(to right, #200122, #6f0000);
+  animation: move7 25s ease-in-out infinite;
+}
+
+/* Globe 8 */
+.bckgd-globe8 {
+  bottom: 45%;
+  right: 35%;
+  width: 3vw; /* Use vw unit to make it responsive */
+  height: 3vw;
+  background: #ff00cc;
+  background: -webkit-linear-gradient(to right, #333399, #ff00cc);
+  background: linear-gradient(to right, #333399, #ff00cc);
+  animation: move8 18s ease-in-out infinite;
+}
+
+/* Media queries for responsiveness */
+@media screen and (max-width: 768px) {
+  /* Adjust globe sizes and positions for smaller screens */
+  .bckgd-globe3 {
+    bottom: 25%;
+    right: 15%;
+    width: 6vw;
+    height: 6vw;
+  }
+
+  .bckgd-globe4 {
+    bottom: 15%;
+    right: 5%;
+    width: 4vw;
+    height: 4vw;
+  }
+
+  .bckgd-globe5 {
+    bottom: 40%;
+    right: 30%;
+    width: 8vw;
+    height: 8vw;
+  }
+
+  .bckgd-globe6 {
+    bottom: 40%;
+    right: 30%;
+    width: 5vw;
+    height: 5vw;
+  }
+
+  .bckgd-globe7 {
+    bottom: 40%;
+    right: 30%;
+    width: 6vw;
+    height: 6vw;
+  }
+
+  .bckgd-globe8 {
+    bottom: 40%;
+    right: 30%;
+    width: 4.5vw;
+    height: 4.5vw;
+  }
+
+  /* Add more media queries for other screen sizes if necessary */
+}
+
+
+
+
+
+
+    @-webkit-keyframes moveblue{
+  0% {top: 40%; right:15%;}
+  50% {top: 30%;right:10%;}
+  100% {top: 40%;right:15%;}
+}
+@-webkit-keyframes movepink{
+  0% {bottom: 65%; left:70%;}
+  50% {bottom: 50%;left:70%;}
+  100% {bottom: 65%;left:70%;}
+}
+
+@-webkit-keyframes move3{
+    0% {bottom: 70%; right:65%;}
+  50% {bottom: 50%;right:55%;}
+  100% {bottom: 70%;right:65%;}
+}
+
+@-webkit-keyframes move4{
+  0% {bottom: 75%; left:65%;}
+  50% {bottom: 50%;left:70%;}
+  100% {bottom: 75%;left:65%;}
+}
+
+@-webkit-keyframes move5{
+  0% {bottom: 35%; left:50%;}
+  50% {bottom: 38%;left:55%;}
+  100% {bottom: 35%;left:50%;}
+}
+
+@-webkit-keyframes move6{
+  0% {bottom: 55%; left:55%;}
+  50% {bottom: 60%;left:45%;}
+  100% {bottom: 55%;left:55%;}
+}
+
+@-webkit-keyframes move7{
+  0% {bottom: 60%; left:40%;}
+  50% {bottom: 35%;left:35%;}
+  100% {bottom: 60%;left:40%;}
+}
+
+@-webkit-keyframes move8{
+  0% {bottom: 70%; left:40%;}
+  50% {bottom: 70%;left:50%;}
+  100% {bottom: 70%;left:40%;}
+}
+
+.upload {
+   cursor: pointer;
+   height: 30px;
+   width: 100px;
+   background-color:rgba(255,255,255,0.5);
+   padding: 10px 0 0 0;
+   font-size: 16px;
+   font-family: Arial, Helvetica, sans-serif;
+   text-align: center;
+   border-radius: 15px;
+   margin-top: 60px;
+   /* Style as you please, it will become the visible UI component. */
+}
+
+#fileInput {
+   opacity: 0;
+   position: absolute;
+   z-index: -1;
+}
+
+h1 {
+    color: #fff;
+    font-family: Arial, Helvetica, sans-serif;
+}
+
+.inputs-container {
+            display: flex;
+            align-items: center;
+            margin-top: 10px;
+        }
+#targetPercentGain {
+    margin-left: 10%;
+    background-color: rgba(255,255,255,0.5);
+    border: none;
+    border-radius: 15px;
+    height: 30px;
+    width: 100px;
+    padding-left: 5px;
+}
+
+#tradePercentage {
+    background-color: rgba(255,255,255,0.5);
+    border: none;
+    border-radius: 15px;
+    height: 30px;
+    width: 100px;
+}
+
+.inputs-container {
+            display: flex;
+            margin-top: 20px;
+        }
+
+        .input-group {
+            display: flex;
+            flex-direction: column;
+            margin-bottom: 10px;
+            margin-left: 30px;
+            font-size: 20px;
+            font-family: Arial, Helvetica, sans-serif;
+        }
+
+        .input-group label {
+            margin-bottom: 5px;
+        }
+    button {
+        margin-top: 15px;
+        cursor: pointer;
+   height: 30px;
+   width: 100px;
+   background-color:rgba(255,255,255,0.5);
+   font-size: 16px;
+   font-family: Arial, Helvetica, sans-serif;
+   text-align: center;
+   border-radius: 15px;
+   border: none;
+   margin-left: 30px;
+    }
+
+    #newX, #newY {
+        background-color: #1c1c25;
+        box-shadow: inset 5px 5px 10px #121218, inset -5px -5px 10px #262632;
+        border: none;
+        border-radius: 15px;
+        height: 40px;
+        outline: none;
+        color: #fff;
+        font-size: 20px;
+        padding-left: 15px;
+    -webkit-box-sizing: border-box; /* Safari/Chrome, other WebKit */
+    -moz-box-sizing: border-box;    /* Firefox, other Gecko */
+    box-sizing: border-box;         /* Opera/IE 8+ */
+    }
+
+    #newX {
+        width: 200px;
+    }
+
+    /* Chrome, Safari, Edge, Opera */
+input::-webkit-outer-spin-button,
+input::-webkit-inner-spin-button {
+  -webkit-appearance: none;
+  margin: 0;
+}
+
+/* Firefox */
+input[type=number] {
+  -moz-appearance: textfield;
+}
+
+    </style>
+</head>
+<body>
+    <div class="bckgd-globe1"></div>
+    <div class="bckgd-globe2"></div>
+    <div class="bckgd-globe3"></div>
+    <div class="bckgd-globe4"></div>
+    <div class="bckgd-globe5"></div>
+    <div class="bckgd-globe6"></div>
+    <div class="bckgd-globe7"></div>
+    <div class="bckgd-globe8"></div>
+
+    <div id="chartContainer">
+        <!-- Canvas to draw the line plot -->
+        <h1>Equity Curve Calculator</h1>
+        <canvas id="lineChart" width="1000" height="400"></canvas>
+
+        <!-- Input element for file upload -->
+        <label for="fileInput" class="upload">Upload EC</label>
+            <input type="file" id="fileInput" class="btn">
+            <br>
+            <div class="inputs-container">
+                <div class="input-group">
+                    <label for="newX">Percent Portfolio</label>
+                    <input type="number" id="newX" min="0" max="100" placeholder="% Portfolio Traded" onfocus="this.placeholder = ''" onblur="this.placeholder = '% Portfolio Traded'">
+                </div>
+    
+                <div class="input-group">
+                    <label for="newY">Target Percent Gain</label>
+                    <input type="number" id="newY" min="0" placeholder="% Gain/Loss" onfocus="this.placeholder = ''" onblur="this.placeholder = '% Gain/Loss'">
+                </div>
+        <button onclick="addDataPoint()">Add Trade</button>
+    </div>
+
+    <script>
+       let chart = null; // Reference to the Chart.js instance
+
+       var labels = []; // Array to store the x-values (labels)
+       var accountValues = []; // Array to store the y-values (data points)
+       var percentChanges = [];
+       var startingValue = 69;
+
+       function addDataPoint() {
+           let percentPort = parseInt(document.getElementById("newX").value) / 100;
+           let percentGain = parseInt(document.getElementById("newY").value) / 100;
+           
+           let gain = parseFloat(accountValues[accountValues.length - 1]) * percentPort * percentGain;
+           let newValue = parseFloat(accountValues[accountValues.length - 1]) + gain
+           console.log(document.getElementById('newX'))
+           console.log(document.getElementById('newY'))
+           console.log(percentPort)
+           console.log(percentGain)
+           console.log(newValue)
+           console.log(gain)
+
+           accountValues.push(newValue)
+           percentChanges = accountValues.map(value => ((value - startingValue) / startingValue) * 100);
+           console.log(accountValues)
+           console.log(percentChanges)
+           labels.push(getNextWeekDay(labels[labels.length - 1]));
+           console.log(labels)
+           drawChart()
+
+       }
+
+        // Event listener for file input
+        document.getElementById('fileInput').addEventListener('change', handleFileSelect, false);
+
+        function handleFileSelect(event) {
+            const file = event.target.files[0];
+            const reader = new FileReader();
+
+            reader.onload = function (e) {
+                const data = new Uint8Array(e.target.result);
+                const workbook = XLSX.read(data, { type: 'array' });
+
+                // Assuming the data is in the first sheet (sheet 0)
+                const firstSheetName = workbook.SheetNames[0];
+                const worksheet = workbook.Sheets[firstSheetName];
+
+                // Convert the worksheet data to JSON format
+                const jsonData = XLSX.utils.sheet_to_json(worksheet, { header: 1, raw: false });
+
+                // Find the last row that contains a valid date in Column A
+                let lastRowIndex = jsonData.length - 1;
+                for (let i = jsonData.length - 1; i >= 0; i--) {
+                    const cellValue = jsonData[i][0];
+                    if (!isNaN(Date.parse(cellValue))) {
+                        lastRowIndex = i;
+                        break;
+                    }
+                }
+
+                // Process the jsonData up to the last valid date row
+                labels = jsonData.slice(1, lastRowIndex + 1).map(row => row[0]); // Assuming the date values are in Column A (index 0)
+                accountValues = jsonData.slice(1, lastRowIndex + 1).map(row => parseFloat(row[1].replaceAll(',',''))); // Assuming the account values are in Column B (index 1)
+
+                // Calculate the percentage change of each day's value with respect to the starting value
+                startingValue = accountValues[0];
+                percentChanges = accountValues.map(value => ((value - startingValue) / startingValue) * 100);
+                drawChart()
+
+                // Store the data points (y-values) in the dataPoints array
+               // dataPoints = percentChanges;
+            };
+            reader.readAsArrayBuffer(file);
+        }
+        function drawChart() {
+                // Destroy the previous chart instance, if any
+                if (chart) {
+                    chart.destroy();
+                }
+
+                // Create the Chart.js line plot
+                const ctx = document.getElementById('lineChart').getContext('2d');
+                chart = new Chart(ctx, {
+                    type: 'line',
+                    data: {
+                        labels: labels,
+                        datasets: [{
+                            label: 'Equity Curve',
+                            data: percentChanges, // was accountValues
+                            borderColor: '#00BFFF',
+                            backgroundColor: 'rgba(0, 191, 255, 0.25)', // Set the background color with 50% opacity
+                            fill: true,
+                            pointRadius: 0, // Hide the data points
+                            pointHitRadius: 5
+                        }]
+                    },
+                    options: {
+                        legend: {
+                            display: false
+                        },
+                        title: {
+                            display: true,
+                            text: 'Your Equity Curve',
+                            color: 'white',
+                        },
+                        responsive: true,
+                        maintainAspectRatio: false,
+                        scales: {
+                            x: {
+                                ticks: {
+                                    color: 'white'
+                                },
+                                title: {
+                                    display: true,
+                                    text: 'Date',
+                                    color: 'white',
+                                },
+                            },
+                            y: {
+                                ticks: {
+                                    color: 'white'
+                                },
+                                title: {
+                                    display: true,
+                                    text: 'Your P/L (%)',
+                                    color: 'white',
+                                },
+                            },
+                            xAxes: [{
+                                type: 'time', // Set X-axis type to 'time'
+                                time: {
+                                    unit: 'day' // Adjust time unit as needed
+                                },
+                                scaleLabel: {
+                                    display: true,
+                                    labelString: 'Date'
+                                }
+                            }],
+                            yAxes: [{
+                                display: true,
+                                ticks: {
+                    callback: function (value) {
+                        return value.toLocaleString(undefined, { minimumFractionDigits: 2 }) + '%'; // Format the y-axis labels with two decimal places and the percentage sign
+                    }
+                },
+                                scaleLabel: {
+                                    display: true,
+                                    labelString: 'Account Value'
+                                }
+                            }]
+                        },
+                    }
+                });
+
+            }
+
+// Function to add a new data point to the chart
+// function addDataPoint(newX, newY) {
+//     // Check if newX is a valid date
+//     const newDate = new Date(newX);
+//     if (isNaN(newDate)) {
+//         alert('Please enter a valid date in the format YYYY-MM-DD.');
+//         return;
+//     }
+
+//     // Parse newY as a float
+//     const newYFloat = parseFloat(newY);
+//     if (isNaN(newYFloat)) {
+//         alert('Please enter a valid numeric value for the Y-axis.');
+//         return;
+//     }
+
+//     // Add the new data point to the arrays
+//     labels.push(newDate);
+//     percentChanges.push(newYFloat);
+
+//     // Sort the data by date in ascending order
+//     const data = labels.map((date, index) => ({ date, value: percentChanges[index] }));
+//     data.sort((a, b) => a.date - b.date);
+//     labels = data.map(item => item.date);
+//     percentChanges = data.map(item => item.value);
+
+//     // Update the chart with the new data point
+//     chart.data.labels = labels;
+//     chart.data.datasets[0].data = percentChanges;
+//     chart.update();
+
+//     // Clear input fields
+//     document.getElementById('newX').value = '';
+//     document.getElementById('newY').value = '';
+// }
+
+
+
+function getNextWeekDay(date) {
+
+var day = new Date(date);
+if (day.getDay() == 5) {
+    var nextDay = new Date(day);
+    nextDay.setDate(day.getDate() + 3);
+}
+else {
+    var nextDay = new Date(day);
+    nextDay.setDate(day.getDate() + 1);
+}
+
+return "" + (nextDay.getMonth()+1) + "/" + nextDay.getDate() + "/" + nextDay.getFullYear().toString().slice(-2);
+}
+
+
+
+
+        // JavaScript to randomly change animation direction
+
+// Function to generate a random boolean value (true or false)
+function getRandomBoolean() {
+  return Math.random() < 0.5;
+}
+
+// Function to set random animation direction for the elements
+function setRandomAnimationDirection() {
+  const elements = document.querySelectorAll('.bckgd-globe1, .bckgd-globe2, .bckgd-globe3, .bckgd-globe4');
+  elements.forEach(element => {
+    element.style.animationDirection = getRandomBoolean() ? 'normal' : 'reverse';
+  });
+}
+
+// Call the function initially and set an interval to update direction every 5 seconds
+setRandomAnimationDirection();
+setInterval(setRandomAnimationDirection, 5000); // Change direction every 5 seconds
+
+    </script>
+  
+</body>
+</html>
