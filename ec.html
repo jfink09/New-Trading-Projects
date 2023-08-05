@@ -7,13 +7,17 @@
     <!-- Include SheetJS library -->
     <script src="https://cdn.jsdelivr.net/npm/xlsx/dist/xlsx.full.min.js"></script>
     <style>
+        @import url("https://fonts.googleapis.com/css2?family=Poppins:wght@200;300;400;500;600&display=swap");
+        @import url("https://cdnjs.cloudflare.com/ajax/libs/font-awesome/5.11.2/css/all.min.css");
         * {
-            background-color: #e0e0e0;
+            background-color:#1c1c25;
         }
         body {
             display: flex;
             justify-content: center;
             align-items: center;
+            color:rgb(255,255,255);
+            overflow: hidden; /* Disable scrolling for the whole page */
         }
         #chartContainer {
             display: flex;
@@ -25,25 +29,155 @@
             margin-top: 20px;
         }
         canvas {
-            max-width: 100% !important;
-            max-height: 100% !important;
-            height: 400px; /* Set the fixed height for the canvas */
-            background-color: #e0e0e0;
-            box-shadow: 15px 15px 20px #929292, -15px -15px 20px #ffffff;
+            max-height: 400px; /* Set the fixed height for the canvas */
+            /*box-shadow: 15px 15px 20px #929292, -15px -15px 20px #ffffff;*/
             border-radius: 15px;
             margin-bottom: 20px; /* Add spacing between the canvas and the input */
-            margin-top: 80px;
+            margin-top: 40px;
+            background: rgba( 0, 0, 0, 0.15 );
+box-shadow: 0 8px 16px 0 rgba(36, 37, 57, 0.37); /*was 0 8px 32px 0*/
+backdrop-filter: blur( 10px );
+-webkit-backdrop-filter: blur( 10px );
+border-radius: 10px;
+border: 1px solid rgba( 255, 255, 255, 0.18 );
         }
+
+        .bckgd-globe1,
+    .bckgd-globe2 {
+      position: absolute;
+      width: 400px;
+      height: 400px;
+      background-image: linear-gradient(rgb(0, 127, 185), rgb(140, 103, 209));
+      border-radius: 500px;
+    }
+    .bckgd-globe1 {
+        top: 3%;
+        left: 3%;
+        animation:moveblue 30s ease-in-out infinite;
+  -moz-animation:moveblue 30s ease-in-out infinite;
+  -webkit-animation:moveblue 30s ease-in-out infinite;
+    }
+    .bckgd-globe2 {
+      bottom: 20%;
+      right: 10%;
+      background-image: linear-gradient(rgb(221, 0, 85), magenta);
+      animation:movepink 30s ease-in-out infinite;
+        -moz-animation:movepink 30s ease-in-out infinite;
+        -webkit-animation:movepink 30s ease-in-out infinite;
+    }
+
+    @-webkit-keyframes moveblue{
+  0% {top: 75%; right:65%;}
+  50% {top: 30%;right:70%;}
+  100% {top: 75%;right:65%;}
+}
+@-webkit-keyframes movepink{
+  0% {bottom: 75%; left:65%;}
+  50% {bottom: 50%;left:70%;}
+  100% {bottom: 75%;left:65%;}
+}
+
+.upload {
+   cursor: pointer;
+   height: 30px;
+   width: 100px;
+   background-color:rgba(255,255,255,0.5);
+   padding: 10px 0 0 0;
+   font-size: 16px;
+   font-family: Arial, Helvetica, sans-serif;
+   text-align: center;
+   border-radius: 15px;
+   /* Style as you please, it will become the visible UI component. */
+}
+
+#fileInput {
+   opacity: 0;
+   position: absolute;
+   z-index: -1;
+}
+
+h1 {
+    color: #fff;
+    font-family: Arial, Helvetica, sans-serif;
+}
+
+.inputs-container {
+            display: flex;
+            align-items: center;
+            margin-top: 10px;
+        }
+#targetPercentGain {
+    margin-left: 10%;
+    background-color: rgba(255,255,255,0.5);
+    border: none;
+    border-radius: 15px;
+    height: 30px;
+    width: 100px;
+    padding-left: 5px;
+}
+
+#tradePercentage {
+    background-color: rgba(255,255,255,0.5);
+    border: none;
+    border-radius: 15px;
+    height: 30px;
+    width: 100px;
+}
+
+.inputs-container {
+            display: flex;
+            margin-top: 10px;
+        }
+
+        .input-group {
+            display: flex;
+            flex-direction: column;
+            margin-bottom: 10px;
+            margin-left: 20px;
+        }
+
+        .input-group label {
+            margin-bottom: 5px;
+        }
+    button {
+        margin-top: 15px;
+        cursor: pointer;
+   height: 30px;
+   width: 100px;
+   background-color:rgba(255,255,255,0.5);
+   font-size: 16px;
+   font-family: Arial, Helvetica, sans-serif;
+   text-align: center;
+   border-radius: 15px;
+   border: none;
+    }
+
     </style>
 </head>
 <body>
- 
+    <div class="bckgd-globe1"></div>
+    <div class="bckgd-globe2"></div>
+
     <div id="chartContainer">
         <!-- Canvas to draw the line plot -->
+        <h1>Your Trading Equity Curve</h1>
         <canvas id="lineChart" width="1000" height="400"></canvas>
 
         <!-- Input element for file upload -->
-        <input type="file" id="fileInput">
+        <label for="fileInput" class="upload">Upload EC</label>
+            <input type="file" id="fileInput" class="btn">
+            <br>
+            <div class="inputs-container">
+                <div class="input-group">
+                    <label for="tradePercentage">Percent Portfolio</label>
+                    <input type="number" id="tradePercentage" min="0" max="100" step="0.01">
+                </div>
+    
+                <div class="input-group">
+                    <label for="targetPercentGain">Target Percent Gain</label>
+                    <input type="number" id="targetPercentGain" min="0" step="0.01">
+                </div>
+        <button onclick="addTrade()">Add Trade</button>
     </div>
 
     <script>
@@ -81,6 +215,10 @@
                 const labels = jsonData.slice(1, lastRowIndex + 1).map(row => row[0]); // Assuming the date values are in Column A (index 0)
                 const accountValues = jsonData.slice(1, lastRowIndex + 1).map(row => parseFloat(row[1])); // Assuming the account values are in Column B (index 1)
 
+                // Calculate the percentage change of each day's value with respect to the starting value
+                const startingValue = accountValues[0];
+                const percentChanges = accountValues.map(value => ((value - startingValue) / startingValue) * 100);
+
                 // Destroy the previous chart instance, if any
                 if (chart) {
                     chart.destroy();
@@ -94,18 +232,46 @@
                         labels: labels,
                         datasets: [{
                             label: 'Equity Curve',
-                            data: accountValues,
-                            borderColor: 'blue',
-                            backgroundColor: 'lightblue',
+                            data: percentChanges, // was accountValues
+                            borderColor: '#00BFFF',
+                            backgroundColor: 'rgba(0, 191, 255, 0.5)', // Set the background color with 50% opacity
                             fill: true,
                             pointRadius: 0, // Hide the data points
                             pointHitRadius: 5
                         }]
                     },
                     options: {
+                        legend: {
+                            display: false
+                        },
+                        title: {
+                            display: true,
+                            text: 'Your Equity Curve',
+                            color: 'white',
+                        },
                         responsive: true,
                         maintainAspectRatio: false,
                         scales: {
+                            x: {
+                                ticks: {
+                                    color: 'white'
+                                },
+                                title: {
+                                    display: true,
+                                    text: 'Date',
+                                    color: 'white',
+                                },
+                            },
+                            y: {
+                                ticks: {
+                                    color: 'white'
+                                },
+                                title: {
+                                    display: true,
+                                    text: 'Your P/L (%)',
+                                    color: 'white',
+                                },
+                            },
                             xAxes: [{
                                 type: 'time', // Set X-axis type to 'time'
                                 time: {
@@ -118,18 +284,46 @@
                             }],
                             yAxes: [{
                                 display: true,
+                                ticks: {
+                    callback: function (value) {
+                        return value.toLocaleString(undefined, { minimumFractionDigits: 2 }) + '%'; // Format the y-axis labels with two decimal places and the percentage sign
+                    }
+                },
                                 scaleLabel: {
                                     display: true,
                                     labelString: 'Account Value'
                                 }
                             }]
-                        }
+                        },
                     }
                 });
             };
 
             reader.readAsArrayBuffer(file);
         }
+
+
+
+
+        // JavaScript to randomly change animation direction
+
+// Function to generate a random boolean value (true or false)
+function getRandomBoolean() {
+  return Math.random() < 0.5;
+}
+
+// Function to set random animation direction for the elements
+function setRandomAnimationDirection() {
+  const elements = document.querySelectorAll('.bckgd-globe1, .bckgd-globe2');
+  elements.forEach(element => {
+    element.style.animationDirection = getRandomBoolean() ? 'normal' : 'reverse';
+  });
+}
+
+// Call the function initially and set an interval to update direction every 5 seconds
+setRandomAnimationDirection();
+setInterval(setRandomAnimationDirection, 5000); // Change direction every 5 seconds
+
     </script>
 </body>
 </html>
