@@ -45,8 +45,8 @@ border: 1px solid rgba( 255, 255, 255, 0.18 );
         .bckgd-globe1,
     .bckgd-globe2 {
       position: absolute;
-      width: 400px;
-      height: 400px;
+      width: 300px;
+      height: 300px;
       background-image: linear-gradient(rgb(0, 127, 185), rgb(140, 103, 209));
       border-radius: 500px;
     }
@@ -133,7 +133,9 @@ h1 {
             display: flex;
             flex-direction: column;
             margin-bottom: 10px;
-            margin-left: 20px;
+            margin-left: 30px;
+            font-size: 20px;
+            font-family: Arial, Helvetica, sans-serif;
         }
 
         .input-group label {
@@ -150,6 +152,22 @@ h1 {
    text-align: center;
    border-radius: 15px;
    border: none;
+   margin-left: 30px;
+    }
+
+    #newX, #newY {
+        background-color: #1c1c25;
+        box-shadow: inset 5px 5px 10px #121218, inset -5px -5px 10px #262632;
+        border: none;
+        border-radius: 15px;
+        height: 40px;
+        outline: none;
+        color: #fff;
+        font-size: 20px;
+        padding-left: 15px;
+    -webkit-box-sizing: border-box; /* Safari/Chrome, other WebKit */
+    -moz-box-sizing: border-box;    /* Firefox, other Gecko */
+    box-sizing: border-box;         /* Opera/IE 8+ */
     }
 
     </style>
@@ -169,19 +187,47 @@ h1 {
             <br>
             <div class="inputs-container">
                 <div class="input-group">
-                    <label for="tradePercentage">Percent Portfolio</label>
-                    <input type="number" id="tradePercentage" min="0" max="100" step="0.01">
+                    <label for="newX">Percent Portfolio</label>
+                    <input id="newX" min="0" max="100" step="0.01" placeholder="% Portfolio Traded" onfocus="this.placeholder = ''" onblur="this.placeholder = '% Portfolio Traded'">
                 </div>
     
                 <div class="input-group">
-                    <label for="targetPercentGain">Target Percent Gain</label>
-                    <input type="number" id="targetPercentGain" min="0" step="0.01">
+                    <label for="newY">Target Percent Gain</label>
+                    <input id="newY" min="0" step="0.01" placeholder="% Gain/Loss" onfocus="this.placeholder = ''" onblur="this.placeholder = '% Gain/Loss'">
                 </div>
-        <button onclick="addTrade()">Add Trade</button>
+        <button onclick="addDataPoint()">Add Trade</button>
     </div>
 
     <script>
-        let chart = null; // Reference to the Chart.js instance
+       let chart = null; // Reference to the Chart.js instance
+
+       var labels = []; // Array to store the x-values (labels)
+       var accountValues = []; // Array to store the y-values (data points)
+       var percentChanges = [];
+       var startingValue = 69;
+
+       function addDataPoint() {
+           let percentPort = parseInt(document.getElementById("newX").value) / 100;
+           let percentGain = parseInt(document.getElementById("newY").value) / 100;
+           
+           let gain = parseFloat(accountValues[accountValues.length - 1]) * percentPort * percentGain;
+           let newValue = parseFloat(accountValues[accountValues.length - 1]) + gain
+           console.log(document.getElementById('newX'))
+           console.log(document.getElementById('newY'))
+           console.log(percentPort)
+           console.log(percentGain)
+           console.log(newValue)
+           console.log(gain)
+
+           accountValues.push(newValue)
+           percentChanges = accountValues.map(value => ((value - startingValue) / startingValue) * 100);
+           console.log(accountValues)
+           console.log(percentChanges)
+           labels.push(getNextWeekDay(labels[labels.length - 1]));
+           console.log(labels)
+           drawChart()
+
+       }
 
         // Event listener for file input
         document.getElementById('fileInput').addEventListener('change', handleFileSelect, false);
@@ -212,13 +258,20 @@ h1 {
                 }
 
                 // Process the jsonData up to the last valid date row
-                const labels = jsonData.slice(1, lastRowIndex + 1).map(row => row[0]); // Assuming the date values are in Column A (index 0)
-                const accountValues = jsonData.slice(1, lastRowIndex + 1).map(row => parseFloat(row[1])); // Assuming the account values are in Column B (index 1)
+                labels = jsonData.slice(1, lastRowIndex + 1).map(row => row[0]); // Assuming the date values are in Column A (index 0)
+                accountValues = jsonData.slice(1, lastRowIndex + 1).map(row => parseFloat(row[1].replaceAll(',',''))); // Assuming the account values are in Column B (index 1)
 
                 // Calculate the percentage change of each day's value with respect to the starting value
-                const startingValue = accountValues[0];
-                const percentChanges = accountValues.map(value => ((value - startingValue) / startingValue) * 100);
+                startingValue = accountValues[0];
+                percentChanges = accountValues.map(value => ((value - startingValue) / startingValue) * 100);
+                drawChart()
 
+                // Store the data points (y-values) in the dataPoints array
+               // dataPoints = percentChanges;
+            };
+            reader.readAsArrayBuffer(file);
+        }
+        function drawChart() {
                 // Destroy the previous chart instance, if any
                 if (chart) {
                     chart.destroy();
@@ -234,7 +287,7 @@ h1 {
                             label: 'Equity Curve',
                             data: percentChanges, // was accountValues
                             borderColor: '#00BFFF',
-                            backgroundColor: 'rgba(0, 191, 255, 0.5)', // Set the background color with 50% opacity
+                            backgroundColor: 'rgba(0, 191, 255, 0.25)', // Set the background color with 50% opacity
                             fill: true,
                             pointRadius: 0, // Hide the data points
                             pointHitRadius: 5
@@ -297,10 +350,61 @@ h1 {
                         },
                     }
                 });
-            };
 
-            reader.readAsArrayBuffer(file);
-        }
+            }
+
+// Function to add a new data point to the chart
+// function addDataPoint(newX, newY) {
+//     // Check if newX is a valid date
+//     const newDate = new Date(newX);
+//     if (isNaN(newDate)) {
+//         alert('Please enter a valid date in the format YYYY-MM-DD.');
+//         return;
+//     }
+
+//     // Parse newY as a float
+//     const newYFloat = parseFloat(newY);
+//     if (isNaN(newYFloat)) {
+//         alert('Please enter a valid numeric value for the Y-axis.');
+//         return;
+//     }
+
+//     // Add the new data point to the arrays
+//     labels.push(newDate);
+//     percentChanges.push(newYFloat);
+
+//     // Sort the data by date in ascending order
+//     const data = labels.map((date, index) => ({ date, value: percentChanges[index] }));
+//     data.sort((a, b) => a.date - b.date);
+//     labels = data.map(item => item.date);
+//     percentChanges = data.map(item => item.value);
+
+//     // Update the chart with the new data point
+//     chart.data.labels = labels;
+//     chart.data.datasets[0].data = percentChanges;
+//     chart.update();
+
+//     // Clear input fields
+//     document.getElementById('newX').value = '';
+//     document.getElementById('newY').value = '';
+// }
+
+
+
+function getNextWeekDay(date) {
+
+var day = new Date(date);
+if (day.getDay() == 5) {
+    var nextDay = new Date(day);
+    nextDay.setDate(day.getDate() + 3);
+}
+else {
+    var nextDay = new Date(day);
+    nextDay.setDate(day.getDate() + 1);
+}
+
+return "" + (nextDay.getMonth()+1) + "/" + nextDay.getDate() + "/" + nextDay.getFullYear().toString().slice(-2);
+}
 
 
 
@@ -325,5 +429,6 @@ setRandomAnimationDirection();
 setInterval(setRandomAnimationDirection, 5000); // Change direction every 5 seconds
 
     </script>
+  
 </body>
 </html>
