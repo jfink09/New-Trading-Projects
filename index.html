@@ -18,12 +18,12 @@
             justify-content: center;
             align-items: center;
             color:rgb(255,255,255);
-            overflow: hidden; /* Disable scrolling for the whole page */
         }
         #chartContainer {
             display: flex;
             flex-direction: column;
             align-items: center;
+            width: 90%; /* Set the chart container width using percentage */
         }
                 /* Add spacing between the input and the canvas */
                 #fileInput {
@@ -276,9 +276,97 @@ background-image: linear-gradient(90deg, #FF9A8B 0%, #FF6A88 55%, #FF99AC 100%);
 }
 
 /* Media queries for responsiveness */
-@media screen and (max-width: 768px) {
+@media screen and (max-width: 768px) and (max-width: 1024px) {
+body {
+  text-align: center;
+}
+.chartContainer {
+  display: none;
+}
+  .lineChart {
+    display: none;
+  }
+  .bckgd-globe1,
+.bckgd-globe2,
+.bckgd-globe3,
+.bckgd-globe4,
+.bckgd-globe5,
+.bckgd-globe6,
+.bckgd-globe7,
+.bckgd-globe8 {
+  display: none;
+}
+.inputs-container {
+  display: none;
+}
+.outputs {
+  display: none;
+}
+canvas {
+  display: none;
+}
+input {
+  display: none;
+}
+label {
+  display: none;
+}
+.upload {
+  display: none;
+}
+button {
+  display: none;
+}
+
+.message-container {
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    height: 100vh;
+}
+
+.mobile-message {
+    font-size: 24px;
+    color: #fff;
+    font-family: Arial, Helvetica, sans-serif;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    margin: 0; /* Remove any potential margins */
+    padding: 0; /* Remove any potential paddings */
+    position: absolute; /* Position the message absolutely */
+    top: 60%; /* Position the message 50% from the top */
+    left: 50%; /* Position the message 50% from the left */
+    transform: translate(-50%, -50%); /* Center the message both vertically and horizontally */
+  }
+
+  .image-container {
+        background-image: url('img/chart.png'); /* Replace with the URL of your image */
+        background-size: contain;
+        background-position: center;
+        background-repeat: no-repeat;
+        width: 110%;
+        height: 25vh;
+    }
+
+  }
+
+@media (min-width: 769px) {
+    .mobile-message {
+        display: none;
+    }
+    .image-container {
+      display: none;
+    }
+}
+
+@media (min-width: 1025px) and (orientation: landscape) {
+    .image-container {
+        background-size: cover;
+    }
+}
   /* Adjust globe sizes and positions for smaller screens */
-  .bckgd-globe3 {
+  /*.bckgd-globe3 {
     bottom: 25%;
     right: 15%;
     width: 6vw;
@@ -318,10 +406,10 @@ background-image: linear-gradient(90deg, #FF9A8B 0%, #FF6A88 55%, #FF99AC 100%);
     right: 30%;
     width: 4.5vw;
     height: 4.5vw;
-  }
+  }*/
 
   /* Add more media queries for other screen sizes if necessary */
-}
+/*}*/
 
 
 
@@ -375,6 +463,57 @@ background-image: linear-gradient(90deg, #FF9A8B 0%, #FF6A88 55%, #FF99AC 100%);
   100% {bottom: 70%;left:40%;}
 }
 
+
+/* Media queries for larger screens like iMac */
+@media screen and (min-width: 1440px) {
+  /* Adjust the keyframes to move less on larger screens */
+
+  @-webkit-keyframes moveblue {
+    0% {
+      top: 35%;
+      left: 30%;
+    }
+    50% {
+      top: 25%;
+      left: 35%;
+    }
+    100% {
+      top: 35%;
+      left: 30%;
+    }
+  }
+
+  @-webkit-keyframes move5 {
+    0% {
+      bottom: 65%;
+      left: 50%;
+    }
+    50% {
+      bottom: 60%;
+      left: 55%;
+    }
+    100% {
+      bottom: 65%;
+      left: 50%;
+    }
+  }
+
+  @-webkit-keyframes move7 {
+    0% {
+      bottom: 70%;
+      left: 40%;
+    }
+    50% {
+      bottom: 75%;
+      left: 35%;
+    }
+    100% {
+      bottom: 70%;
+      left: 40%;
+    }
+  }
+}
+
 .upload {
    cursor: pointer;
    height: 30px;
@@ -397,8 +536,13 @@ background-image: linear-gradient(90deg, #FF9A8B 0%, #FF6A88 55%, #FF99AC 100%);
 
 h1 {
     color: #fff;
-    font-family: Arial, Helvetica, sans-serif;
-}
+    font-family: Arial, Helvetica, sans-serif;}
+
+    /* Media query for smaller screens */
+  /*@media screen and (max-width: 768px) {
+    font-size: 28px; /* Decrease font size for smaller screens */
+ /* }
+}*/
 
 .inputs-container {
             display: flex;
@@ -425,21 +569,27 @@ h1 {
 
 .inputs-container {
             display: flex;
-            margin-top: 20px;
+            flex-direction: row; /* Change to column layout */
+    justify-content: center; /* Horizontally align children (input and p tags) */
+    margin-top: 20px;
         }
 
         .input-group {
-            display: flex;
-            flex-direction: column;
-            margin-bottom: 10px;
-            margin-left: 30px;
-            font-size: 20px;
-            font-family: Arial, Helvetica, sans-serif;
+          display: flex;
+    flex-direction: column;
+    margin-bottom: 10px;
+    margin-left: 30px;
+    font-size: 20px;
+    font-family: Arial, Helvetica, sans-serif;
         }
 
         .input-group label {
             margin-bottom: 5px;
         }
+        .outputs {
+    display: flex;
+    flex-direction: row;
+}
     button {
         margin-top: 15px;
         cursor: pointer;
@@ -454,7 +604,7 @@ h1 {
    margin-left: 30px;
     }
 
-    #newX, #newY {
+    #newX, #newY, #stopLoss {
         background-color: #1c1c25;
         box-shadow: inset 5px 5px 10px #121218, inset -5px -5px 10px #262632;
         border: none;
@@ -485,6 +635,29 @@ input[type=number] {
   -moz-appearance: textfield;
 }
 
+p {
+  font-size: 20px;
+  font-family: Arial, Helvetica, sans-serif;
+  margin-left: 30px
+}
+
+/* Media query for smaller screens */
+@media screen and (max-width: 768px) {
+
+ /* .inputs-container {
+    flex-direction: column; /* Stack items in a column on smaller screens */
+  /*  align-items: center; /* Horizontally center the items */
+  /*}
+
+  #newY,
+  #stopLoss,
+  button {
+    /* Adjust the width for smaller screens to make them stack */
+   /* width: 100%; /* 100% width will make the inputs take the full width of the container */
+  /*  margin-bottom: 10px; /* Add some spacing between stacked inputs */
+  }
+/*}*/
+
     </style>
 </head>
 <body>
@@ -500,23 +673,38 @@ input[type=number] {
     <div id="chartContainer">
         <!-- Canvas to draw the line plot -->
         <h1>Equity Curve Calculator</h1>
+        <div class="image-container"></div>
         <canvas id="lineChart" width="1000" height="400"></canvas>
+
+        <div class="message-container">
+          <p class="mobile-message">Mobile Coming Soon!</p>
+      </div>
 
         <!-- Input element for file upload -->
         <label for="fileInput" class="upload">Upload EC</label>
-            <input type="file" id="fileInput" class="btn">
+            <input type="file" id="fileInput" class="btn" onchange="handleFileUpload()">
             <br>
             <div class="inputs-container">
                 <div class="input-group">
                     <label for="newX">Percent Portfolio</label>
-                    <input type="number" id="newX" min="0" max="100" placeholder="% Portfolio Traded" onfocus="this.placeholder = ''" onblur="this.placeholder = '% Portfolio Traded'">
+                    <input type="number" id="newX" min="0" max="100" oninput="preventNegativeInput()" onkeydown="preventScientificNotation(event)" placeholder="% Portfolio Traded" onfocus="this.placeholder = ''" onblur="this.placeholder = '% Portfolio Traded'">
                 </div>
     
                 <div class="input-group">
                     <label for="newY">Target Percent Gain</label>
-                    <input type="number" id="newY" min="0" placeholder="% Gain/Loss" onfocus="this.placeholder = ''" onblur="this.placeholder = '% Gain/Loss'">
+                    <input type="number" id="newY" min="0" onkeydown="preventScientificNotation(event)" placeholder="% Gain/Loss" onfocus="this.placeholder = ''" onblur="this.placeholder = '% Gain/Loss'">
                 </div>
+                        <!-- Output for risk/reward ratio -->
+        <div class="input-group">
+        <label for="stopLoss">Stop Loss</label>
+        <input type="number" id="stopLoss" oninput="preventNegativeInput()" onkeydown="preventScientificNotation(event)" placeholder="Stop Loss Percent" onfocus="this.placeholder = ''" onblur="this.placeholder = 'Stop Loss Percent'">
+        </div>
         <button onclick="addDataPoint()">Add Trade</button>
+    </div>
+    <div class="outputs">
+    <!--<p id="riskRewardRatio">Risk/Reward Ratio: N/A</p>-->
+    <p id="averageRiskRewardRatio" style="display: none;">Average R/R: N/A</p>
+    <p id="winRate" style="display: none;">Win Rate: N/A</p>
     </div>
 
     <script>
@@ -527,9 +715,100 @@ input[type=number] {
        var percentChanges = [];
        var startingValue = 69;
 
-       function addDataPoint() {
+// Variables to keep track of win and total trades
+let numWins = 0;
+let numLosses = 0;
+let totalTrades = 1; // Initial trade is always a win
+
+// Variables to keep track of cumulative risk and reward
+let cumulativeRisk = 0;
+let cumulativeReward = 0;
+
+// Add a variable to track if a file has been uploaded
+let fileUploaded = false;
+
+function handleFileUpload() {
+    // Your code to handle the file upload, e.g., using FileReader API
+    // After the file is uploaded successfully, set fileUploaded to true
+    // For example:
+    fileUploaded = true;
+}
+
+// Function to calculate and update the win rate
+function updateWinRate() {
+    totalTrades = numWins + numLosses;
+    let winRate = (numWins / totalTrades) * 100;
+    //document.getElementById("winRate").textContent = "Win Rate: " + winRate.toFixed(2) + "%";
+
+    // Check if winRate is a valid number (not NaN)
+    if (!isNaN(winRate)) {
+        document.getElementById("winRate").style.display = "block"; // Display the win rate <p> tag
+        document.getElementById("winRate").textContent = "Win Rate: " + winRate.toFixed(2) + "%";
+    } else {
+        document.getElementById("winRate").style.display = "none"; // Hide the win rate <p> tag
+    }
+}
+
+// Function to calculate and update the average risk/reward ratio
+function updateAverageRiskRewardRatio() {
+    let totalRisk = cumulativeRisk;
+    let totalReward = cumulativeReward;
+
+    // Calculate average risk/reward ratio
+    let averageRiskRewardRatio = totalReward / totalRisk;
+    //document.getElementById("averageRiskRewardRatio").textContent = "Average Risk/Reward Ratio: " + averageRiskRewardRatio.toFixed(2);
+
+    // Check if winRate is a valid number (not NaN)
+    if (!isNaN(averageRiskRewardRatio)) {
+        document.getElementById("averageRiskRewardRatio").style.display = "block"; // Display the win rate <p> tag
+        document.getElementById("averageRiskRewardRatio").textContent = "Average R/R: " + averageRiskRewardRatio.toFixed(2);
+    } else {
+      document.getElementById("averageRiskRewardRatio").textContent = "Average R/R: " + averageRiskRewardRatio.toFixed(2);
+    }
+}
+
+// Function to calculate and update the risk/reward ratio
+function updateRiskRewardRatio() {
+
+    let percentPort = (parseFloat(document.getElementById("newX").value) / 100) || 0;
+    let percentGain = (parseFloat(document.getElementById("newY").value) / 100) || 0;
+    let stopLoss = (parseFloat(document.getElementById("stopLoss").value) / 100) || 0;
+
+    let risk, reward;
+
+    // Calculate risk and reward based on the percentGain value
+    if (percentGain > 0) {
+        // Win scenario
+        reward = percentGain;
+        risk = Math.abs(stopLoss);
+    } else {
+        // Loss scenario
+        risk = Math.abs(percentGain);
+        reward = stopLoss;
+    }
+
+     // Update cumulative risk and reward with the values for the new data point
+     cumulativeRisk += risk;
+    cumulativeReward += reward;
+
+    // Update the average risk/reward ratio
+    updateAverageRiskRewardRatio();
+
+    // Calculate and update risk/reward ratio
+    //let riskRewardRatio = reward / risk;
+    //document.getElementById("riskRewardRatio").textContent = "Risk/Reward Ratio: " + riskRewardRatio.toFixed(2);
+}
+
+ function addDataPoint() {
+   // Check if a file has been uploaded
+   if (!fileUploaded) {
+        // Show a popup or alert to the user to upload a file first
+        alert("Please upload your equity curve file first!");
+        return; // Prevent the data point from being added
+    }
            let percentPort = parseInt(document.getElementById("newX").value) / 100;
            let percentGain = parseInt(document.getElementById("newY").value) / 100;
+           let stopLoss = parseInt(document.getElementById("stopLoss").value) / 100;
            
            let gain = parseFloat(accountValues[accountValues.length - 1]) * percentPort * percentGain;
            let newValue = parseFloat(accountValues[accountValues.length - 1]) + gain
@@ -544,11 +823,31 @@ input[type=number] {
            percentChanges = accountValues.map(value => ((value - startingValue) / startingValue) * 100);
            console.log(accountValues)
            console.log(percentChanges)
-           labels.push(getNextWeekDay(labels[labels.length - 1]));
+           //labels.push(getNextWeekDay(labels[labels.length - 1]));
+             // Push an empty string into the labels array for the new datapoint
+           labels.push("");
            console.log(labels)
+           // Calculate risk and reward for the new datapoint
+
+           // Update win and loss count based on conditions
+    if (percentPort > 0 && percentGain > 0) {
+        numWins++;
+    } else if (percentGain < 0) {
+        numLosses++;
+    }
+
+    // Update the average risk/reward ratio
+    updateAverageRiskRewardRatio()
+    updateWinRate();
+    updateRiskRewardRatio();
+
            drawChart()
 
        }
+       updateWinRate();
+       //updateRiskRewardRatio();
+       updateAverageRiskRewardRatio()
+
 
         // Event listener for file input
         document.getElementById('fileInput').addEventListener('change', handleFileSelect, false);
@@ -592,6 +891,7 @@ input[type=number] {
             };
             reader.readAsArrayBuffer(file);
         }
+
         function drawChart() {
                 // Destroy the previous chart instance, if any
                 if (chart) {
@@ -712,21 +1012,59 @@ input[type=number] {
 
 
 
-function getNextWeekDay(date) {
+// function getNextWeekDay(date) {
 
-var day = new Date(date);
-if (day.getDay() == 5) {
-    var nextDay = new Date(day);
-    nextDay.setDate(day.getDate() + 3);
-}
-else {
-    var nextDay = new Date(day);
-    nextDay.setDate(day.getDate() + 1);
+// var day = new Date(date);
+// if (day.getDay() == 5) {
+//     var nextDay = new Date(day);
+//     nextDay.setDate(day.getDate() + 3);
+// }
+// else {
+//     var nextDay = new Date(day);
+//     nextDay.setDate(day.getDate() + 1);
+// }
+
+// return "" + (nextDay.getMonth()+1) + "/" + nextDay.getDate() + "/" + nextDay.getFullYear().toString().slice(-2);
+// }
+
+// function getNextWeekDay() {
+//     var today = new Date();
+
+//     // If today is Friday (5), the next date will be 3 days after (Monday)
+//     if (today.getDay() == 5) {
+//         today.setDate(today.getDate() + 3);
+//     } else {
+//         // For other days, the next date will be the next day
+//         today.setDate(today.getDate() + 1);
+//     }
+
+//     return "" + (today.getMonth() + 1) + "/" + today.getDate() + "/" + today.getFullYear().toString().slice(-2);
+// }
+
+function preventNegativeInput() {
+  const inputElement = document.getElementById('newX');
+  const inputValue = inputElement.value;
+  const inputElement2 = document.getElementById('stopLoss');
+  const inputValue2 = inputElement2.value;
+
+  // Remove any leading minus sign if present
+  if (inputValue.startsWith('-')) {
+    inputElement.value = inputValue.slice(1);
+  }
+  if (inputValue2.startsWith('-')) {
+    inputElement2.value = inputValue2.slice(1);
+  }
 }
 
-return "" + (nextDay.getMonth()+1) + "/" + nextDay.getDate() + "/" + nextDay.getFullYear().toString().slice(-2);
-}
+function preventScientificNotation(event) {
+  // Get the pressed key from the event
+  const key = event.key;
 
+  // Prevent the event if the pressed key is "e" or "E"
+  if (key === 'e' || key === 'E') {
+    event.preventDefault();
+  }
+}
 
 
 
